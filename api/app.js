@@ -1,12 +1,13 @@
 const express =require('express');
 const app=express();
 
-const {mongoose}=require('.db/mongoose');
+const {mongoose}=require('./db/mongoose');
 
-const bodyParser=require('body-parser')
+const bodyParser=require('body-parser');
 
 //load models
-const {List, Task}= require('./db/models')
+// const { List, Task} = require('./db/models');
+const {List}= require('./db/models/list.model');
 
 //load middleware
 app.use(bodyParser.json());
@@ -17,8 +18,12 @@ app.use(bodyParser.json());
 
 //get all lists
 app.get('/lists',(req,res)=>{
-    List.find({}).then((lists)=>{})
-res.send(lists);
+    List.find({}).then((lists)=>{
+        res.send(lists);
+    }).catch((e)=>{
+        res.send(e);
+    })
+
 })
 
 //creat a new list and return it back (including the id)
@@ -43,8 +48,6 @@ app.patch('/lists/:id',(req,res)=>{
 app.delete('/lists/:id',(req,res)=>{
     res.send('hello there..')
 })
-
-
 
 app.listen(3000,()=>{
     console.log('server is on port 3000');

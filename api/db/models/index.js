@@ -1,6 +1,7 @@
-
 const {List}= require('./list.model');
 const {Task}= require('./task.model');
-const { model } = require('mongoose');
+// const { moduel } = require('mongoose');
 
-model.exports = {List,Task}
+moduel.exports={}
+
+moduel.exports = {List,Task}
