@@ -1,18 +1,37 @@
 const express =require('express');
 const app=express();
 
+const {mongoose}=require('.db/mongoose');
+
+const bodyParser=require('body-parser')
+
+//load models
+const {List, Task}= require('./db/models')
+
+//load middleware
+app.use(bodyParser.json());
+
 // routes handlers
 
 //list routes
 
 //get all lists
 app.get('/lists',(req,res)=>{
-    res.send('//get all lists')
+    List.find({}).then((lists)=>{})
+res.send(lists);
 })
 
-//creat a list
+//creat a new list and return it back (including the id)
 app.post('/lists',(req,res)=>{
-    //create new list, return new list doc(includes the ID)
+    let title=req.body.title;
+
+    let newList= new List({
+        title
+    });
+
+    newList.save().then((listDoc)=>{
+        res.send(listDoc);
+    })
 })
 
 //update a specific (by ID)list
