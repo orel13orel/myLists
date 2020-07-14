@@ -56,6 +56,27 @@ app.delete('/lists/:id',(req,res)=>{
    )
 })
 
+//get all tasks in a specific list (by list id)
+app.get('/lists/:listId/tasks', (req, res)=>{
+Task.find({_listId: req.params.listId}).then(
+    (tasks)=>{res.send(tasks);
+    })
+});
+
+//create new task in a specific list (by list id)
+app.post('/lists/:listId/tasks', (req, res)=>{
+    let newTask = new Task({
+        title: req.body.title,
+        _listId: req.params.listId
+    });
+
+    newTask.save().then((newTaskDoc)=>{
+        res.send(newTaskDoc);
+    })    
+    })
+
+
+
 app.listen(3000,()=>{
     console.log('server is on port 3000');
 })
