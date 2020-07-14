@@ -6,8 +6,9 @@ const {mongoose}=require('./db/mongoose');
 const bodyParser=require('body-parser');
 
 //load models
-// const { List, Task} = require('./db/models');
-const {List}= require('./db/models/list.model');
+const { List, Task} = require('./db/models');
+// const {List}= require('./db/models/list.model');
+// const {Task}= require('./db/models/task.model');
 
 //load middleware
 app.use(bodyParser.json());
