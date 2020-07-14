@@ -42,7 +42,11 @@ app.post('/lists',(req,res)=>{
 
 //update a specific (by ID)list
 app.patch('/lists/:id',(req,res)=>{
-    res.send('hello there..')
+    List.findOneAndUpdate({_id: req.params.id }, {
+        $set: req.body
+    }).then(()=>{
+        res.sendStatus(200);
+    });
 })
 
 //delete a list
