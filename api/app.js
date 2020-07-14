@@ -49,9 +49,11 @@ app.patch('/lists/:id',(req,res)=>{
     });
 })
 
-//delete a list
+//delete a specific list (by id)
 app.delete('/lists/:id',(req,res)=>{
-    res.send('hello there..')
+   List.findByIdAndRemove({_id: req.params.id}).then(
+       (removedDoc)=>{res.send(removedDoc);}
+   )
 })
 
 app.listen(3000,()=>{
