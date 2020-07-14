@@ -63,6 +63,16 @@ Task.find({_listId: req.params.listId}).then(
     })
 });
 
+// //get one task in a specific list (by list and task IDs)
+// app.get('/lists/:listId/tasks/:taskId', (req,res)=>{
+// Task.findOne({
+//     _id: req.params.taskId,
+//     _listId: req.params.listId
+// }).then((task)=>{
+//     res.send(task);
+// })
+// });
+
 //create new task in a specific list (by list id)
 app.post('/lists/:listId/tasks', (req, res)=>{
     let newTask = new Task({
@@ -86,6 +96,16 @@ app.post('/lists/:listId/tasks', (req, res)=>{
             res.sendStatus(200);
         })
     });
+
+    //delete an existing task (by task and list IDs)
+    app.delete('/lists/:listId/tasks/:taskId', (req,res)=>{
+        Task.findOneAndRemove({
+            _id: req.params.taskId,
+            _listId: req.params.listId
+        }).then(
+            (removedDoc)=>{res.send(removedDoc);
+            })
+        });
 
 app.listen(3000,()=>{
     console.log('server is on port 3000');
