@@ -73,9 +73,19 @@ app.post('/lists/:listId/tasks', (req, res)=>{
     newTask.save().then((newTaskDoc)=>{
         res.send(newTaskDoc);
     })    
-    })
+    });
 
-
+    //update an existing task (by task and list IDs)
+    app.patch('/lists/:listId/tasks/:taskId', (req,res)=>{
+        Task.findOneAndUpdate({
+            _id: req.params.taskId,
+            _listId: req.params.listId
+        },{
+            $set: req.body
+        }).then(()=>{
+            res.sendStatus(200);
+        })
+    });
 
 app.listen(3000,()=>{
     console.log('server is on port 3000');
