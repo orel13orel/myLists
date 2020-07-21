@@ -15,11 +15,11 @@ export class NewListComponent implements OnInit {
   ngOnInit(): void {
   }
   createList(title: string) {
-    this.taskService.createList(title).subscribe((task: List) => {
-      console.log(task);
+    this.taskService.createList(title).subscribe((list: List) => {
+      console.log(list);
 
-      // redirect to /lists/task._id
-      this.router.navigate(['/lists', task._id] );
+      // redirect to /lists/list._id
+      this.router.navigate(['/lists', list._id] );
   });
 }
 }
