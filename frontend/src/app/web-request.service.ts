@@ -13,7 +13,7 @@ export class WebRequestService {
    }
 
   get(uri: string) {
-    return this.http.get('${this.ROOT_URL}/${uri}');
+    return this.http.get(`${this.ROOT_URL}/${uri}`);
   }
 
   post(uri: string, payload: Object) {
@@ -25,7 +25,7 @@ export class WebRequestService {
   }
 
   delete(uri: string) {
-    return this.http.delete('${this.ROOT_URL}/${uri}');
+    return this.http.delete(`${this.ROOT_URL}/${uri}`);
   }
 
 }

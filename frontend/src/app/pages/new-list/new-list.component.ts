@@ -15,6 +15,8 @@ export class NewListComponent implements OnInit {
   createList(title: string) {
     this.taskService.createList(title).subscribe((res: any) => {
       console.log(res);
+
+      // redirect to /lists/res._id
   });
 }
 }
