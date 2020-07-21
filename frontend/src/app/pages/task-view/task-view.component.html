@@ -12,7 +12,7 @@
         </a>
 
 
-        <a  class="list-menu-item" *ngFor="let list of lists" [routerLink]="['/lists','list._id']">
+        <a  class="list-menu-item" *ngFor="let list of lists" [routerLink]="['/lists',list._id]">
           <p>{{list.title}}</p>
         </a>
 

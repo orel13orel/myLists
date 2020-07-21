@@ -24,7 +24,6 @@ export class TaskViewComponent implements OnInit {
     this.taskService.getLists().subscribe((lists: any[]) => {
       console.log(lists);
       this.lists = lists;
-      
     });
   }
 
