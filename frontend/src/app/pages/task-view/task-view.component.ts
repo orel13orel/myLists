@@ -9,7 +9,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class TaskViewComponent implements OnInit {
 
-  lists: any;
+  lists: any[];
+  tasks: any[];
 
 
   constructor(private taskService: TaskService, private route: ActivatedRoute) { }
@@ -18,7 +19,11 @@ export class TaskViewComponent implements OnInit {
     this.route.params.subscribe(
       (params) => {
       console.log(params);
+      this.taskService.getTasks(params.listId).subscribe((tasks: any[]) => {
+        this.tasks = tasks;
+      });
     }
+
     );
 
     this.taskService.getLists().subscribe((lists: any[]) => {
