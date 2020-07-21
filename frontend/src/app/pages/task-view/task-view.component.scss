@@ -26,6 +26,8 @@
 
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+
+  position: relative;
 }
 
 .list-menu{
@@ -76,4 +78,15 @@
   &.complete{
     text-decoration: line-through;
   }
+}
+
+.circle-add-button{
+  height: 50px;
+  width: 50px;
+  background: $primary;
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  border: none;
+  border-radius: 50%;
 }
