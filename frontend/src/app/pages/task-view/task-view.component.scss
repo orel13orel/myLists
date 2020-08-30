@@ -62,7 +62,7 @@
   border-radius: 5px;
   margin-top: 5px;
 
-  &:not(.complete) {
+  &:not(.completed) {
     cursor: pointer;
     transition: box-shadow 0.1s ease, transform 0.1s ease;
 
@@ -75,7 +75,7 @@
     }
   }
 
-  &.complete{
+  &.completed{
     text-decoration: line-through;
   }
 }
