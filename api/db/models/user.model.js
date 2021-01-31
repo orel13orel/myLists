@@ -45,13 +45,17 @@ userSchema.methods.toJSON = function ()
     return _.omit(userObject, ['password','sessions']) 
 }
 
-userSchema.methods.generateAccessAuthToken = function(){
-    const user=this;
+userSchema.methods.generateAccessAuthToken = function () {
+    const user = this;
     return new Promise((resolve, reject) => {
         //creat and return the JWT (JASON web token)
-        jwt.sign({_id: user._id.toHexString() },jwtSecret,{expiresIn: "10m"}), (err,token) => {
-            if(!err){ resolve(token);}
-        }else{ reject();}
+        jwt.sign({ _id: user._id.toHexString() }, jwtSecret, { expiresIn: "10m" }, (err, token) => {
+            if (!err) {
+                resolve(token);
+            } else {
+                reject();
+            }
+        })
     })
 }
 

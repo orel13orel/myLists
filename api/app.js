@@ -6,7 +6,7 @@ const {mongoose}=require('./db/mongoose');
 const bodyParser=require('body-parser');
 
 //load models
-const { List, Task} = require('./db/models');
+const { List, Task, User} = require('./db/models');
 // const {List}= require('./db/models/list.model');
 // const {Task}= require('./db/models/task.model');
 
@@ -114,6 +114,52 @@ app.post('/lists/:listId/tasks', (req, res)=>{
             (removedDoc)=>{res.send(removedDoc);
             })
         });
+
+
+// user routes
+
+// user sign up
+app.post('/users',(req,res)=>{
+    let body = rec.body;
+    let newUser = new User(body);
+    newUser.save().then(() => {
+        return newUser.createSession();
+    }).then((refreshToken) => {
+        //session created sucssfully. generating an access auth token for the user:
+        return newUser.generateAccessAuthToken().then((accessToken) => {
+            return {accessToken, refreshToken};
+        });
+    }).then((authToken) => {
+        res
+            .header('x-refresh-token', authToken.refreshToken)
+            .header('x-access-token', authToken.accessToken)
+            .send(newUser);
+    }).catch((e)=>{
+        res.status(400).send(e);
+    })
+})
+
+//user login
+app.post('/users/login', (req, res) => {
+    let email = req.body.email;
+    let password = req.body.password;
+
+    User.findByCredentials(email, password).then((user) => {
+        return user.createSession().then((refreshToken) => {
+            //session created sucssfully. generating an access auth token for the user:
+            return user.generateAccessAuthToken().then((accessToken) => {
+                return { accessToken, refreshToken }
+            });
+        }).then((authTokens) => {
+            res
+                .header('x-refresh-token', authTokens.refreshToken)
+                .header('x-access-token', authTokens.accessToken)
+                .send(user);
+        })
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+})
 
 app.listen(3000,()=>{
     console.log('server is on port 3000');
