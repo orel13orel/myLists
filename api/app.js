@@ -10,6 +10,8 @@ const { List, Task, User} = require('./db/models');
 // const {List}= require('./db/models/list.model');
 // const {Task}= require('./db/models/task.model');
 
+
+/* MIDDLEWARE */
 //load middleware
 app.use(bodyParser.json());
 
@@ -20,6 +22,53 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token, x-refresh-token, _id");
     next();
 });
+
+
+// verify refresh token middleware (verefies the session)
+let verifySession = (req, res, next) => {
+    
+    let refreshToken = req.header('x-refresh-token');
+    
+    let _id = req.header('_id');
+
+    User.findByIdAndToken(_id, refreshToken).then((user) => {
+        if (!user) {
+            return Promise.reject({
+                'error': 'User not found. Make sure that the refresh token and user id are correct'
+            });
+        }
+
+        req.user_id = user._id;
+        req.userObject = user;
+        req.refreshToken = refreshToken;
+
+        let isSessionValid = false;
+
+        user.sessions.forEach((session) => {
+            
+            if (session.token === refreshToken) {
+                console.log("fsession.token === refreshToken");
+                if (User.hasRefreshTokenExpired(session.expiresAt) === false) 
+                    isSessionValid = true;
+                }
+            }
+        });
+
+        if (isSessionValid) {
+            console.log("SessionValid");
+            next();
+        } else {
+            return Promise.reject({
+                'error': 'Refresh token has expired or the session is invalid'
+            })
+        }
+
+    }).catch((e) => {
+        res.status(401).send(e);
+    })
+}
+
+/* MIDDLEWARE END */
 
 // routes handlers
 
@@ -157,6 +206,16 @@ app.post('/users/login', (req, res) => {
                 .header('x-access-token', authTokens.accessToken)
                 .send(user);
         })
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+})
+
+// GET an access token
+app.get('/users/me/access-token', verifySession, (req, res) => {
+    //the user is authenticated and we have the user_id and user object available to us
+    req.userObject.generateAccessAuthToken().then((accessToken) => {
+        res.header('x-access-token', accessToken).send({ accessToken });
     }).catch((e) => {
         res.status(400).send(e);
     });

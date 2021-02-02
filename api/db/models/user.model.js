@@ -91,13 +91,9 @@ UserSchema.methods.createSession = function () {
 
 
 UserSchema.statics.findByIdAndToken = function (_id, token) {
-    // finds user by id and token
     // used in auth middleware (verifySession)
-
     const User = this;
 
-    // let test = User.findById(_id)
-    
     return User.findOne({
         _id,
         'sessions.token': token
@@ -123,10 +119,9 @@ UserSchema.statics.findByCredentials = function(email,password) {
 
 }
 
-UserSchema.static.hasRefreshTokenExpired = (expiresAt)=>{
-    // Epoch = 1.1.1970 00:00 time stamp
+UserSchema.statics.hasRefreshTokenExpired = (expiresAt) => {
     let secondsSinceEpoch = Date.now() / 1000;
-    if(expiresAt>secondsSinceEpoch){
+    if (expiresAt > secondsSinceEpoch) {
         return false;
     } else {
         return true;
