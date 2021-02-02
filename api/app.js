@@ -47,15 +47,13 @@ let verifySession = (req, res, next) => {
         user.sessions.forEach((session) => {
             
             if (session.token === refreshToken) {
-                console.log("fsession.token === refreshToken");
-                if (User.hasRefreshTokenExpired(session.expiresAt) === false) 
+                if (User.hasRefreshTokenExpired(session.expiresAt) === false) {
                     isSessionValid = true;
                 }
             }
         });
 
         if (isSessionValid) {
-            console.log("SessionValid");
             next();
         } else {
             return Promise.reject({
