@@ -119,9 +119,10 @@ app.post('/lists/:listId/tasks', (req, res)=>{
 // user routes
 
 // user sign up
-app.post('/users',(req,res)=>{
-    let body = rec.body;
+app.post('/users',(req,res) => {
+    let body = req.body;
     let newUser = new User(body);
+
     newUser.save().then(() => {
         return newUser.createSession();
     }).then((refreshToken) => {
@@ -129,10 +130,10 @@ app.post('/users',(req,res)=>{
         return newUser.generateAccessAuthToken().then((accessToken) => {
             return {accessToken, refreshToken};
         });
-    }).then((authToken) => {
+    }).then((authTokens) => {
         res
-            .header('x-refresh-token', authToken.refreshToken)
-            .header('x-access-token', authToken.accessToken)
+            .header('x-refresh-token', authTokens.refreshToken)
+            .header('x-access-token', authTokens.accessToken)
             .send(newUser);
     }).catch((e)=>{
         res.status(400).send(e);

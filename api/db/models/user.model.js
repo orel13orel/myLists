@@ -1,15 +1,15 @@
 const mongoose= require('mongoose');
 const _= require('lodash');
 const jwt= require('jsonwebtoken');
-const { reject } = require('lodash');
+// const { reject } = require('lodash');
 const crypto = require('crypto');
-const { resolve } = require('path');
+// const { resolve } = require('path');
 const bcrypt = require('bcryptjs');
 
 //JWT secret
 const jwtSecret = "fdh7843fhcr48f34fhufidjsahgf84739957hbncoerqasbn963rtjgbt78es jtydxcn";
 
-const userSchema=new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -36,66 +36,75 @@ const userSchema=new mongoose.Schema({
 
 // instance methods
 
-userSchema.methods.toJSON = function () 
+UserSchema.methods.toJSON = function () 
 {
     const user= this;
     const userObject = user.toObject();
 
     // return the doc without password and sessions (that shouldn't be public)
-    return _.omit(userObject, ['password','sessions']) 
+    return _.omit(userObject, ['password','sessions']);
+    
 }
 
-userSchema.methods.generateAccessAuthToken = function () {
+UserSchema.methods.generateAccessAuthToken = function () {
     const user = this;
     return new Promise((resolve, reject) => {
         //creat and return the JWT (JASON web token)
-        jwt.sign({ _id: user._id.toHexString() }, jwtSecret, { expiresIn: "10m" }, (err, token) => {
+        jwt.sign({ _id: user._id.toHexString() }, jwtSecret, { expiresIn: "15m" }, (err, token) => {
             if (!err) {
                 resolve(token);
             } else {
+                // there is an error
                 reject();
             }
         })
     })
 }
 
-
-userSchema.methods.generateRefreshAuthToken = function() {
+UserSchema.methods.generateRefreshAuthToken = function () {
     // this function generate a string- it doesn,t save it to the DB, saveSessionToDatabase() does.
     return new Promise((resolve, reject) => {
-        crypto.randomBytes(64,(err, buf) => {
-            if(!err){
+        crypto.randomBytes(64, (err, buf) => {
+            if (!err) {
+                // no error
                 let token = buf.toString('hex');
+
                 return resolve(token);
             }
         })
     })
 }
 
-userSchema.methods.createSesstion = function() {
-    let user =this;
+UserSchema.methods.createSession = function () {
+    let user = this;
 
     return user.generateRefreshAuthToken().then((refreshToken) => {
-        return saveSessionToDatabase(user,refreshToken);
-    }).then((refreshToken)=>{
+        return saveSessionToDatabase(user, refreshToken);
+    }).then((refreshToken) => {
         return refreshToken;
-    }).catch((e)=>{
-        return Promise.reject('failed to save session to DB/n' + e);
+    }).catch((e) => {
+        return Promise.reject('Failed to save session to database.\n' + e);
     })
 }
 
 //  model methods (static)
 
-userSchema.statics.findByIdAndToken = function(_id,token) {
-    // used in auth middleware (varifySession)
-    const user = this;
-    return user.findOne({
+
+UserSchema.statics.findByIdAndToken = function (_id, token) {
+    // finds user by id and token
+    // used in auth middleware (verifySession)
+
+    const User = this;
+
+    // let test = User.findById(_id)
+    
+    return User.findOne({
         _id,
         'sessions.token': token
     });
 }
 
-userSchema.statics.findByCredentials = function(email,password) {
+UserSchema.statics.findByCredentials = function(email,password) {
     let user = this;
     return user.findOne({email}).then((user)=>{
         if(!user){
@@ -114,7 +123,7 @@ userSchema.statics.findByCredentials = function(email,password) {
 
 }
 
-userSchema.static.hasRefreshTokenExpired = (expiresAt)=>{
+UserSchema.static.hasRefreshTokenExpired = (expiresAt)=>{
     // Epoch = 1.1.1970 00:00 time stamp
     let secondsSinceEpoch = Date.now() / 1000;
     if(expiresAt>secondsSinceEpoch){
@@ -126,7 +135,7 @@ userSchema.static.hasRefreshTokenExpired = (expiresAt)=>{
 
 //middleware
 //before a user doc is saved, this code runs
-userSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next) {
     let user = this;
     // number of hashing rounds
     let costFactor = 10;
@@ -149,7 +158,7 @@ userSchema.pre('save', function (next) {
 // helper methods
 
 let saveSessionToDatabase = (user, refreshToken) => {
-    return new Promise((res,rej)=> {
+    return new Promise((resolve,reject)=> {
         let expiresAt = generateRefreshTokenExpiryTime();
         user.sessions.push({'token': refreshToken, expiresAt});
         user.save().then(()=>{
@@ -167,6 +176,6 @@ let generateRefreshTokenExpiryTime= () => {
     return((Date.now()/1000)+secondsUntilExpire);
 }
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', UserSchema);
 
 module.exports = {User}
